@@ -60,3 +60,9 @@ stage/$(NAME): $(GO_MOD_SOURCES) $(SOURCES) | stage
 ## same, but shorter
 .PHONY: build
 build: test stage/$(NAME)
+
+stage/$(NAME)-linux-arm: stage/$(NAME)
+	GOARCH="arm" GOOS="linux" GOARM="6" go build -o $@ -ldflags '-X main.version=$(VER)' -v .
+
+.PHONY: linux-arm
+linux-arm: stage/$(NAME)-linux-arm
