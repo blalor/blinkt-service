@@ -1,6 +1,3 @@
-## the publicly-visible name of your binary; defaults to name of directory
-NAME = $(notdir $(CURRENT_DIR))
-
 ## version, taken from Git tag (like v1.0.0) or hash
 VER := $(shell (git describe --always --dirty 2>/dev/null || echo '<unknown>') | sed -e 's/^v//g' )
 
@@ -54,15 +51,15 @@ watch-tests: $(GINKGO)
 	@$(GINKGO) watch -r
 
 ## build the binary
-stage/$(NAME): $(GO_MOD_SOURCES) $(SOURCES) | stage
+stage/blinkt-service: $(GO_MOD_SOURCES) $(SOURCES) | stage
 	go build -o $@ -ldflags '-X main.version=$(VER)' -v .
 
 ## same, but shorter
 .PHONY: build
-build: test stage/$(NAME)
+build: test stage/blinkt-service
 
-stage/$(NAME)-linux-arm: stage/$(NAME)
+stage/blinkt-service-linux-arm: stage/blinkt-service
 	GOARCH="arm" GOOS="linux" GOARM="6" go build -o $@ -ldflags '-X main.version=$(VER)' -v .
 
 .PHONY: linux-arm
-linux-arm: stage/$(NAME)-linux-arm
+linux-arm: stage/blinkt-service-linux-arm
