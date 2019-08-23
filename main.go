@@ -12,6 +12,8 @@ import (
     
     flags "github.com/jessevdk/go-flags"
     log "github.com/sirupsen/logrus"
+    
+    Blinkt "github.com/alexellis/blinkt_go/sysfs"
 )
 
 var version string = "undef"
@@ -149,21 +151,48 @@ func main() {
     log.Debug("hi there! (tickertape tickertape)")
     log.Infof("version: %s", version)
     
+    blinkt := Blinkt.NewBlinkt()
+    blinkt.Setup()
+    blinkt.Clear()
+    blinkt.Show()
+    
     listener, err := net.Listen("unix", opts.SocketPath)
     checkError("listening", err)
+    
+    checkError("setting perms", os.Chmod(opts.SocketPath, 0777))
     
     ledChan := make(chan Led)
     go func() {
         for {
             led := <-ledChan
+            
+            if led.Brightness < 0 {
+                led.Brightness = 0
+            }
+            
+            if led.Brightness > 1 {
+                led.Brightness = 1
+            }
+
             log.Infof("will update led: %v", led)
+            
+            blinkt.SetPixel(led.index, led.Red, led.Green, led.Blue)
+            blinkt.SetPixelBrightness(led.index, led.Brightness)
+            blinkt.Show()
         }
     }()
     
     mux := http.NewServeMux()
     for i := 0; i < 8; i++ {
         mux.Handle(fmt.Sprintf("/led/%d", i), LedHandler{i, ledChan})
+        
+        blinkt.SetPixel(i, 0, 5, 5)
+        blinkt.SetPixelBrightness(i, 0.033)
+        blinkt.Show()
     }
+    
+    blinkt.Clear()
+    blinkt.Show()
     
     server := http.Server{
         ReadHeaderTimeout: 10 * time.Second,

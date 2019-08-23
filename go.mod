@@ -1,6 +1,7 @@
 module github.com/blalor/blinkt-service
 
 require (
+	github.com/alexellis/blinkt_go v0.0.0-20180120180744-cc0ca163e0bc
 	github.com/golang/protobuf v1.3.0 // indirect
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
