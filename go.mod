@@ -6,7 +6,6 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.10.1
 	github.com/sirupsen/logrus v1.3.0
-	github.com/vektra/mockery v0.0.0-20181123154057-e78b021dcbb5
 )
 
 require (
